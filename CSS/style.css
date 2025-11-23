@@ -1,0 +1,31 @@
+#frame{
+    height: 580px;
+    width: 100%;
+    background-color: white;
+}
+body{
+    background-color: black;
+}
+#ball{
+    height: 80px;
+    width: 80px;
+    background-color: aquamarine;
+    border-radius: 100px;
+    animation: axisx 3s ease-in, axisy 3s ease-in 3s infinite;
+}
+@keyframes axisx{
+    form{
+    }
+    to{
+        transform: translateX(300px) translatey(500px)
+    }
+}
+@keyframes axisy{
+    form{
+        transform: translateX(300px) translatey(500px)
+    }
+    to{
+        transform: translateX(600px) translatey(-500px)
+    }
+}
+
