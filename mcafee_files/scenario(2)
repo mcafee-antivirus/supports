@@ -1,0 +1,168 @@
+window.DigitalFeedback['https://digitalfeedback.us.confirmit.com/api/digitalfeedback/loader/prod/scenario?programKey=DAixoz&scenarioId=11416&programVersion=240'] = function (api) {
+console.log('v0.5');
+
+var pid = "p813535936300";
+
+/*
+var url = document.location.href;
+var strlc = url.toLowerCase();
+var strA1 = strlc.split("://www.mcafee.com/");
+var strA2 = strA1[1].split("/");
+var lngstr = strA2[0];
+*/
+
+var url = document.location.href;
+var strlc = url.toLowerCase();
+var strA1 = strlc.split("://");
+var strA2 = strA1[1].split("/");
+var lngstr = strA2[1];
+
+if( url.indexOf('https://protection.mcafee.com/') != -1)
+{
+	console.log('CF-D');
+	return;
+}
+
+var lngObj = ConfirmitHelper.getLangData(lngstr);
+//console.log( lngObj.code );
+
+var al = lngObj.al;
+
+if( !al )
+{
+  console.log( "unsupported language / culture.  exiting." );
+  return;
+}
+
+var dObj = {
+  "purl": encodeURIComponent(window.location.href),
+  "l" : lngObj.code,
+  "lcnt" : lngstr,
+}
+
+    
+    
+try{ dObj["aid"] = utag_data["tm_global_account_id"];} catch(e){dObj["aid"] = 'NA';}
+try{ dObj["cid"] = utag_data["qp.cui"];} catch(e){dObj["cid"] = 'NA';}
+try{ dObj["dul"] = utag_data["tm_global_culture_code"];} catch(e){dObj["dul"] = 'NA';}
+try{ dObj["pnc"] = utag_data["qp.cohortid"];} catch(e){dObj["pnc"] = 'NA';}
+try{ dObj["pwf"] = utag_data["tm_global_affiliate_id_name"];} catch(e){dObj["pwf"] = 'NA';}
+try{ dObj["pwc"] = utag_data["tm_global_culture_code"];} catch(e){dObj["pwc"] = 'NA';}
+try{ dObj["poo"] = utag_data["tm_global_product"];} catch(e){dObj["poo"] = 'NA';}
+try{ dObj["pwid"] = utag_data["tm_global_install_date"];} catch(e){dObj["pwid"] = 'NA';}
+try{ dObj["pwe"] = utag_data["qp.eula"];} catch(e){dObj["pwe"] = 'NA';}
+try{ dObj["pwsf"] = utag_data["qp.pkg_id"];} catch(e){dObj["pwsf"] = 'NA';}
+try{ dObj["pwsp"] = utag_data["qp.pkgid"];} catch(e){dObj["pwsp"] = 'NA';}
+try{ dObj["pwsr"] = utag_data["qp.isreg"];} catch(e){dObj["pwsr"] = 'NA';}
+try{ dObj["pwsed"] = utag_data["qp.expdt"];} catch(e){dObj["pwsed"] = 'NA';}
+try{ dObj["psi"] = utag_data["_t_session_id"];} catch(e){dObj["psi"] = 'NA';}
+try{ dObj["src"] = utag_data["tm_global_source_type"];} catch(e){dObj["src"] = 'NA';}
+
+try{ dObj["tm1"] = utag_data["tm_global_utm_term"];} catch(e){dObj["tm1"] = 'NA';}
+try{ dObj["tm2"] = utag_data["tm_global_sitesection"];} catch(e){dObj["tm2"] = 'NA';}
+try{ dObj["tm3"] = utag_data["tm_global_culture_code"];} catch(e){dObj["tm3"] = 'NA';}
+try{ dObj["tm4"] = utag_data["tm_global_affiliate_id_name"];} catch(e){dObj["tm4"] = 'NA';}
+try{ dObj["tm5"] = utag_data["tm_global_channel"];} catch(e){dObj["tm5"] = 'NA';}
+try{ dObj["tm6"] = utag_data["tm_global_geo"];} catch(e){dObj["tm6"] = 'NA';}
+try{ dObj["tm7"] = utag_data["tm_global_error_type"];} catch(e){dObj["tm7"] = 'NA';}
+try{ dObj["tm8"] = utag_data["tm_global_error_code"];} catch(e){dObj["tm8"] = 'NA';}
+try{ dObj["tm9"] = utag_data["tm_global_message_id"];} catch(e){dObj["tm9"] = 'NA';}
+try{ dObj["tm10"] = utag_data["tm_global_subtype"];} catch(e){dObj["tm10"] = 'NA';}
+try{ dObj["tm11"] = utag_data["tm_global_click_source"];} catch(e){dObj["tm11"] = 'NA';}
+try{ dObj["tm12"] = utag_data["tm_global_account_id"];} catch(e){dObj["tm12"] = 'NA';}
+try{ dObj["tm13"] = utag_data["tm_global_ar_flag"];} catch(e){dObj["tm13"] = 'NA';}
+try{ dObj["tm14"] = utag_data["tm_global_rcode_version"];} catch(e){dObj["tm14"] = 'NA';}
+try{ dObj["tm15"] = utag_data["tm_global_pkgid"];} catch(e){dObj["tm15"] = 'NA';}
+try{ dObj["tm16"] = utag_data["tm_global_affiliate_id"];} catch(e){dObj["tm16"] = 'NA';}
+try{ dObj["tm17"] = utag_data["tm_global_affiliate_name"];} catch(e){dObj["tm17"] = 'NA';}
+
+dObj.dfsrc = "Website";
+dObj.dfkey = "DAixoz"
+
+var ctx = api();
+ctx.container('unsolicited feedback container');
+ctx.survey(pid);
+ctx.invite('feedback tab');
+ctx.data(dObj);
+ctx.show();
+
+ctx.events.showInvite.on(
+  function() { 
+    if( lngObj.code != 9 )
+    {
+      document.getElementById('cffb1').innerHTML = lngObj.fbtxt;
+    }
+})
+
+ConfirmitHelper.ConfirmitReceiveMessage = function(e) {
+if (e.origin === 'https://survey.confirmit.com' || e.origin === 'https://survey.us.confirmit.com') 
+	{
+		//ConfirmitHelper.ConfirmitLog(true, 'message received:');
+		//ConfirmitHelper.ConfirmitLog(true, e);
+		var myObj = e.data;
+		//ConfirmitHelper.ConfirmitLog(true,  ' message data:');
+		//ConfirmitHelper.ConfirmitLog(true, JSON.stringify(myObj));
+		if(myObj.type == "cf-height-change")
+		{
+			var nheight = myObj.value;
+			if( nheight && nheight > 0 )
+			{
+				var nfstr = ""+(nheight+10) + "px";
+				var ncstr = ""+(nheight*1.2) + "px";
+				document.getElementById('cf_usfi').style.height = nfstr;
+				document.getElementById('cf_usfc').style.height = nfstr;
+				//ConfirmitHelper.ConfirmitLog(true,  'height changed to: '+nfstr);
+			}
+		}
+    }
+}
+
+ctx.events.showContainer.on(
+  function() { 
+    if( lngObj.code != 9 )
+    {    
+        document.getElementById('cfusal1').setAttribute('aria-label',lngObj.al);
+    }
+
+  	if( lngObj.code == 1 || lngObj.code == 13 )
+		{
+				document.getElementById('cfusal1').style.left = "14px";
+				document.getElementById('cfusal1').style.right = "auto";
+		}
+    //console.log('survey shown');
+
+  var myHeight = 0;
+  var myWidth = 0;
+
+  if( typeof( window.innerWidth ) == 'number' ) {
+    //Non-IE
+    myWidth = window.innerWidth;
+    myHeight = window.innerHeight;
+  } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+    //IE 6+ in 'standards compliant mode'
+    myWidth = document.documentElement.clientWidth;
+    myHeight = document.documentElement.clientHeight;
+  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+    //IE 4 compatible
+    myWidth = document.body.clientWidth;
+    myHeight = document.body.clientHeight;
+  }
+
+if( myHeight < 641 || myWidth < 641 )
+{
+	console.log('custom height listener set'); 
+	window.addEventListener('message', ConfirmitHelper.ConfirmitReceiveMessage);
+}	
+		ctx.events.completeSurvey.on(
+	  function() { 
+		//console.log('survey completed'); 
+		try{window.removeEventListener('message', ConfirmitHelper.ConfirmitReceiveMessage);}catch(e){}
+	  });
+
+	ctx.events.closeContainer.on(
+	  function() { 
+		//console.log('survey closed');
+		try{window.removeEventListener('message', ConfirmitHelper.ConfirmitReceiveMessage);}catch(e){}
+	  });
+  });
+};

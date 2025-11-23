@@ -1,0 +1,140 @@
+.mcf__v-carousel--wrapper{
+	padding-top: 50px;
+	padding-bottom: 50px;
+}
+.carousel-tabs {
+  font-family: Poppins;
+  font-style: normal;
+  padding: 64px 32px 0px 32px;
+  width: 100%;
+  text-align: center;
+}
+
+.carousel-row { 
+  gap: 64px;
+  align-items: center;
+} 
+
+.custom-btn {
+  background: #ffffff;
+  border: none;
+  border-left: 4px solid #f9f1ec;
+  padding: 0 39.5px;
+  padding-top: 14px;
+}
+
+.custom-btn.active {
+  border-left-color: #af0707;
+}
+
+.custom-btn.active > h3 {
+  color: #af0707 !important;
+   /* Header/H8 */
+	font-size: 18px !important;
+	font-style: normal !important;
+	font-weight: 600 !important;
+	line-height: 24px !important;
+}
+
+.custom-btn.active > p {
+	color: #454545;
+	/* Header/H8 */
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 24px;
+}
+
+.custom-btn:not(.active) > h3 {
+  color: #6e6e6e !important;
+  /* Header/H10 */
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+}
+
+.custom-btn:not(.active) > p {
+  color: #6e6e6e !important;
+  /* Body/Subhead 4 */
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 24px !important;
+}
+
+.item-styles {
+  border: none;
+}
+
+.button-styles {
+  background: #ffffff !important;
+  border: none;
+  border-left: 4px solid #f9f1ec;
+  border-radius: 0px !important;
+  box-shadow: none !important;
+}
+
+.button-styles:not(.collapsed) {
+  box-shadow: 0;
+}
+
+.button-styles.collapsed > h3 {
+	color: #454545;
+	/* Header/H8 */
+	font-size: 16px !important;
+	font-style: normal !important;
+	font-weight: 600 !important;
+	line-height: 24px !important;
+}
+
+.button-styles.collapsed > p {
+	color: #454545;
+	/* Header/H8 */
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.button-styles:not(.collapsed) > h3 {
+	color: #af0707;
+	/* Header/H8 */
+	font-size: 16px !important;
+	font-style: normal !important;
+	font-weight: 600 !important;
+	line-height: 24px !important;
+}
+
+.button-styles:not(.collapsed) > p {
+	color: #454545;
+	/* Header/H8 */
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 20px;
+}
+
+.button-styles:not(.collapsed)  {
+  box-shadow: none;
+  border-left-color: #af0707;
+}
+
+.button-styles::after {
+  content: none;
+}
+
+.according-img-container {
+  display: flex;
+  padding: 18.252px 0px 8.251px 18px;
+  align-items: center;
+}
+
+.accordion {
+    margin-top: 32px;
+}
+.accordion-button { 
+	padding: 16px 0 16px 24px;
+}
+@media screen and  (max-width: 576px){
+	.mcf__v-carousel--wrapper{
+		padding: 26px 16px !important;
+	}
+}

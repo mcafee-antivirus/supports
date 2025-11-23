@@ -1,0 +1,154 @@
+window.DigitalFeedback['https://digitalfeedback.us.confirmit.com/api/digitalfeedback/loader/prod/scenario?programKey=DAixoz&scenarioId=11454&programVersion=240'] = function (api) {
+ConfirmitHelper = {	
+  
+  	programKey : "DAixoz",
+
+  	DFSite : "https://digitalfeedback.us.confirmit.com/api/digitalfeedback/loader",
+  
+  	oneDayCookieName : "DFOSAD",
+
+  	ConfirmitLog : function(show,string){if(show){console.log("CONF: ",string)}},
+	
+	setCookie:function(b,c,a){b=[encodeURIComponent(b)+"="+encodeURIComponent(c)];a&&("expiry"in a&&("number"==typeof a.expiry&&(a.expiry=new Date(1E3*a.expiry+ +new Date)),b.push("expires="+a.expiry.toGMTString())),"domain"in a&&b.push("domain="+a.domain),"path"in a&&b.push("path="+a.path),"secure"in a&&a.secure&&b.push("secure"),"samesite"in a&&b.push("SameSite="+a.samesite));document.cookie=b.join("; ")},
+	
+	getCookie:function(b,c){for(var a=[],e=document.cookie.split(/; */),d=0;d<e.length;d++){var f=e[d].split("=");f[0]==encodeURIComponent(b)&&a.push(decodeURIComponent(f[1].replace(/\+/g,"%20")))}return c?a:a[0]},
+	
+    clearCookie:function(b){ConfirmitHelper.setCookie(b,'', {path : '/', expiry : -86400, secure:true, samesite: 'None'});},
+
+    getMeta:function(metaName){const metas = document.getElementsByTagName('meta'); for(let i = 0; i < metas.length; i++) { if (metas[i].getAttribute('name') === metaName) { return metas[i].getAttribute('content'); } } return ''; },
+
+	getLocation : function(){ var dlh = ""+document.location.href; return dlh.toLowerCase(); },
+
+  	getUrlParameter : function(name){name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]'); var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'); var results = regex.exec(location.search); return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));},
+  
+  	looseJsonParse : function(str) {  return eval?.(`"use strict";(${str})`); },
+
+  	environment : "DEV",
+}
+
+ConfirmitHelper.closeSurvey = function()
+{
+var spid;
+var wt;
+if( window.opener )
+{
+  	ConfirmitHelper.ConfirmitLog(true,"** window.opener present **");
+}
+
+try {
+	spid = document.getElementById("cfPID").value;
+	wt = document.getElementById("cfWT").value; 
+}
+catch(e)
+{
+ // not in confirmit popout window
+	ConfirmitHelper.ConfirmitLog(true,"** pid or wt missing. not in confirmit out window. **");
+}
+console.log( spid + " | " + wt);
+if(spid && wt )
+{
+ top.close();
+}
+var surveyArea = document.querySelector(".cf-container-wrapper");
+surveyArea.remove();
+}
+
+ConfirmitHelper.trapFocus = function(element) 
+{
+  var focusableEls = element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled]), [tabindex="0"]');
+  var firstFocusableEl = focusableEls[0];  
+  var lastFocusableEl = focusableEls[focusableEls.length - 1];
+  var KEYCODE_TAB = 9;
+  element.addEventListener('keydown', function(e) {
+    var isTabPressed = (e.key === 'Tab' || e.keyCode === KEYCODE_TAB);
+
+    if (!isTabPressed) { 
+      return; 
+    }
+
+    if ( e.shiftKey )  {
+      if (document.activeElement === firstFocusableEl) {
+        lastFocusableEl.focus();
+          e.preventDefault();
+        }
+      } else  {
+      if (document.activeElement === lastFocusableEl) {
+        firstFocusableEl.focus();
+          e.preventDefault();
+        }
+      }
+  });
+}
+
+
+ConfirmitHelper.FixButtons =  function(container) {
+    var btns = container.querySelectorAll('.cf-invite__button, .cf-invite__close, .cf-container__close');
+    for(var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener("keydown", function(e) {
+        if (e.key === 'Enter' || e.key === 'Spacebar' || e.key === ' ') { 
+          e.preventDefault();
+          e.target.click();
+  		}
+      });
+    }
+}
+
+
+ConfirmitHelper.convertLangCode = function(languageString)
+{
+	switch(""+languageString)
+	{
+		case "en": return 9; break;
+		case "es": return 10; break;
+		default: return 9; break;
+	}
+}
+
+ConfirmitHelper.ConfirmitReceiveMessage2 = function(e) {
+if (e.origin === 'https://survey.confirmit.com' || e.origin === 'https://survey.us.confirmit.com') 
+	{
+		ConfirmitHelper.ConfirmitLog(true, 'message received:');
+		ConfirmitHelper.ConfirmitLog(true, e);
+		var myObj = e.data;
+		ConfirmitHelper.ConfirmitLog(true,  ' message data:');
+		ConfirmitHelper.ConfirmitLog(true, JSON.stringify(myObj));
+		if(myObj.type == "cf-height-change")
+		{
+			var nheight = myObj.value;
+			if( nheight && nheight > 0 )
+			{
+				var nfstr = ""+(nheight) + "px";
+				//var ncstr = ""+(nheight*1.2) + "px";
+				document.getElementById('cf_usfix').style.height = nfstr;
+				document.getElementById('cf_usfcx').style.height = nfstr;
+				ConfirmitHelper.ConfirmitLog(true,  'height changed to: '+nfstr);
+			}
+		}
+    }
+}
+
+
+ConfirmitHelper.ConfirmitReceiveMessage3 = function(e) {
+if (e.origin === 'https://survey.confirmit.com' || e.origin === 'https://survey.us.confirmit.com') 
+	{
+		ConfirmitHelper.ConfirmitLog(true, 'message received:');
+		ConfirmitHelper.ConfirmitLog(true, e);
+		var myObj = e.data;
+		ConfirmitHelper.ConfirmitLog(true,  ' message data:');
+		ConfirmitHelper.ConfirmitLog(true, JSON.stringify(myObj));
+		if(myObj.type == "cf-height-change")
+		{
+			var nheight = myObj.value;
+			if( nheight && nheight > 0 )
+			{
+				var nfstr = ""+(nheight) + "px";
+				//var ncstr = ""+(nheight*1.2) + "px";
+				document.getElementById('cf_usfix').style.height = nfstr;
+				document.getElementById('cf_usfcx').style.height = nfstr;
+				ConfirmitHelper.ConfirmitLog(true,  'height changed to: '+nfstr);
+			}
+		}
+    }
+}
+
+};

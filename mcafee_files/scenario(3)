@@ -1,0 +1,121 @@
+window.DigitalFeedback['https://digitalfeedback.us.confirmit.com/api/digitalfeedback/loader/prod/scenario?programKey=DAixoz&scenarioId=11925&programVersion=240'] = function (api) {
+ConfirmitHelper.getLangData = function( lngcntstr )
+{
+  
+  
+	var lngObj;
+	if( lngcntstr.substr(0,3) == "en-" )
+	{
+		return {'code' : '9', 'fbtxt' : 'Feedback', 'al' : 'Close the survey dialog'}
+	}
+
+
+	var lngObj;
+	
+	switch( lngcntstr )
+	{
+		case "pt-br": lngObj =  {'code' : '1046', 'fbtxt' : 'Feedback', 'al' : 'Fechar a caixa de diálogo da pesquisa'}; break;
+		case "de-de": lngObj =  {'code' : '7', 'fbtxt' : 'Feedback', 'al' : 'Schließen Sie den Umfragedialog'}; break;
+		case "fr-fr": lngObj =  {'code' : '12', 'fbtxt' : 'Commentaires', 'al' : 'Fermer la boîte de dialogue d\'enquête'}; break;
+		case "fr-ch": lngObj =  {'code' : '12', 'fbtxt' : 'Commentaires', 'al' : 'Fermer la boîte de dialogue d\'enquête'}; break;
+		case "it-it": lngObj =  {'code' : '16', 'fbtxt' : 'Commenti', 'al' : 'Chiudi la finestra di dialogo del sondaggio'}; break;
+		case "es-es": lngObj =  {'code' : '40970', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-ar": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-cl": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-co": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-pa": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-pe": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-mx": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "ja-ja": lngObj =  {'code' : '17', 'fbtxt' : 'フィードバック', 'al' : '調査ダイアログを閉じます'}; break;
+		case "ja-jp": lngObj =  {'code' : '17', 'fbtxt' : 'フィードバック', 'al' : '調査ダイアログを閉じます'}; break;
+		case "zh-cn": lngObj =  {'code' : '32772', 'fbtxt' : '反馈', 'al' : '关闭调查对话框'}; break;
+		case "id-id": lngObj =  {'code' : '33', 'fbtxt' : 'Masukan', 'al' : 'Tutup dialog survei'}; break;
+		case "fr-ca": lngObj =  {'code' : '3084', 'fbtxt' : 'Commentaires', 'al' : 'Fermer la boîte de dialogue d\'enquête'}; break;
+		case "ko-kr": lngObj =  {'code' : '18', 'fbtxt' : '피드백', 'al' : '설문조사 대화상자 닫기'}; break;
+		case "nl-nl": lngObj =  {'code' : '1043', 'fbtxt' : 'Feedback', 'al' : 'Sluit het enquêtedialoogvenster'}; break;
+		case "de-ch": lngObj =  {'code' : '7', 'fbtxt' : 'Feedback', 'al' : 'Schließen Sie den Umfragedialog'}; break;
+		case "de-it": lngObj =  {'code' : '7', 'fbtxt' : 'Feedback', 'al' : 'Schließen Sie den Umfragedialog'}; break;
+		case "sv-se": lngObj =  {'code' : '1053', 'fbtxt' : 'Feedback', 'al' : 'täng undersökningsdialogrutan'}; break;
+		case "sv-sv": lngObj =  {'code' : '1053', 'fbtxt' : 'Feedback', 'al' : 'täng undersökningsdialogrutan'}; break;
+		case "tr-tr": lngObj =  {'code' : '1055', 'fbtxt' : 'Geri bildirim', 'al' : 'Anket iletişim kutusunu kapat'}; break;
+		case "pl-pl": lngObj =  {'code' : '21', 'fbtxt' : 'opinię', 'al' : 'Zamknij okno ankiety'}; break;
+		case "ru-ru": lngObj =  {'code' : '25', 'fbtxt' : 'Обратная связь', 'al' : 'Закройте диалоговое окно опроса'}; break;
+		case "da-dk": lngObj =  {'code' : '6', 'fbtxt' : 'Feedback', 'al' : 'Luk undersøgelsesdialogen'}; break;
+		case "fi-fl": lngObj =  {'code' : '11', 'fbtxt' : 'Palaute', 'al' : 'Sulje kyselyn valintaikkuna'}; break;
+		case "fi-fi": lngObj =  {'code' : '11', 'fbtxt' : 'Palaute', 'al' : 'Sulje kyselyn valintaikkuna'}; break;
+		case "pt-pt": lngObj =  {'code' : '22', 'fbtxt' : 'Comentário', 'al' : 'Fechar a caixa de diálogo da pesquisa'}; break;
+		case "nb-no": lngObj =  {'code' : '20', 'fbtxt' : 'Tilbakemelding', 'al' : 'Lukk undersøkelsesdialogen'}; break;
+		case "he-il": lngObj =  {'code' : '13', 'fbtxt' : 'מָשׁוֹב', 'al' : 'סגור את תיבת הדו-שיח של הסקר'}; break;
+		case "ar-ae": lngObj =  {'code' : '1', 'fbtxt' : 'تاثرات', 'al' : 'أغلق مربع حوار الاستطلاع'}; break;
+		case "cs-cz": lngObj =  {'code' : '5', 'fbtxt' : 'Zpětná vazba', 'al' : 'Zavřete dialogové okno průzkumu'}; break;
+		case "el-gr": lngObj =  {'code' : '8', 'fbtxt' : 'Σχόλια', 'al' : 'Κλείστε το παράθυρο διαλόγου έρευνας'}; break;
+		case "hu-hu": lngObj =  {'code' : '14', 'fbtxt' : 'Visszacsatolás', 'al' : 'Zárja be a felmérés párbeszédpanelt'}; break;
+		case "en-us": lngObj =  {'code' : '9', 'fbtxt' : 'Feedback', 'al' : 'Close the survey dialog'}; break;  
+	}
+	
+	if( !lngObj )
+	{
+		try
+		{
+			var cc = utag_data["tm_global_culture_code"];
+			var cclc = cc.toLowerCase();
+			switch( cclc )
+			{
+		case "pt-br": lngObj =  {'code' : '1046', 'fbtxt' : 'Feedback', 'al' : 'Fechar a caixa de diálogo da pesquisa'}; break;
+		case "de-de": lngObj =  {'code' : '7', 'fbtxt' : 'Feedback', 'al' : 'Schließen Sie den Umfragedialog'}; break;
+		case "fr-fr": lngObj =  {'code' : '12', 'fbtxt' : 'Commentaires', 'al' : 'Fermer la boîte de dialogue d\'enquête'}; break;
+ 		case "fr-ch": lngObj =  {'code' : '12', 'fbtxt' : 'Commentaires', 'al' : 'Fermer la boîte de dialogue d\'enquête'}; break;       
+		case "it-it": lngObj =  {'code' : '16', 'fbtxt' : 'Commenti', 'al' : 'Chiudi la finestra di dialogo del sondaggio'}; break;
+		case "es-es": lngObj =  {'code' : '40970', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-ar": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-cl": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-co": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-pa": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-pe": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "es-mx": lngObj =  {'code' : '2058', 'fbtxt' : 'Comentarios', 'al' : 'Cerrar el cuadro de diálogo de la encuesta'}; break;
+		case "ja-ja": lngObj =  {'code' : '17', 'fbtxt' : 'フィードバック', 'al' : '調査ダイアログを閉じます'}; break;
+		case "ja-jp": lngObj =  {'code' : '17', 'fbtxt' : 'フィードバック', 'al' : '調査ダイアログを閉じます'}; break;
+		case "zh-cn": lngObj =  {'code' : '32772', 'fbtxt' : '反馈', 'al' : '关闭调查对话框'}; break;
+		case "id-id": lngObj =  {'code' : '33', 'fbtxt' : 'Masukan', 'al' : 'Tutup dialog survei'}; break;
+		case "fr-ca": lngObj =  {'code' : '3084', 'fbtxt' : 'Commentaires', 'al' : 'Fermer la boîte de dialogue d\'enquête'}; break;
+		case "ko-kr": lngObj =  {'code' : '18', 'fbtxt' : '피드백', 'al' : '설문조사 대화상자 닫기'}; break;
+		case "nl-nl": lngObj =  {'code' : '1043', 'fbtxt' : 'Feedback', 'al' : 'Sluit het enquêtedialoogvenster'}; break;
+		case "de-ch": lngObj =  {'code' : '7', 'fbtxt' : 'Feedback', 'al' : 'Schließen Sie den Umfragedialog'}; break;
+		case "de-it": lngObj =  {'code' : '7', 'fbtxt' : 'Feedback', 'al' : 'Schließen Sie den Umfragedialog'}; break;
+		case "sv-se": lngObj =  {'code' : '1053', 'fbtxt' : 'Feedback', 'al' : 'täng undersökningsdialogrutan'}; break;
+		case "sv-sv": lngObj =  {'code' : '1053', 'fbtxt' : 'Feedback', 'al' : 'täng undersökningsdialogrutan'}; break;
+		case "tr-tr": lngObj =  {'code' : '1055', 'fbtxt' : 'Geri bildirim', 'al' : 'Anket iletişim kutusunu kapat'}; break;
+		case "pl-pl": lngObj =  {'code' : '21', 'fbtxt' : 'opinię', 'al' : 'Zamknij okno ankiety'}; break;
+		case "ru-ru": lngObj =  {'code' : '25', 'fbtxt' : 'Обратная связь', 'al' : 'Закройте диалоговое окно опроса'}; break;
+		case "da-dk": lngObj =  {'code' : '6', 'fbtxt' : 'Feedback', 'al' : 'Luk undersøgelsesdialogen'}; break;
+		case "fi-fl": lngObj =  {'code' : '11', 'fbtxt' : 'Palaute', 'al' : 'Sulje kyselyn valintaikkuna'}; break;
+		case "fi-fi": lngObj =  {'code' : '11', 'fbtxt' : 'Palaute', 'al' : 'Sulje kyselyn valintaikkuna'}; break;
+		case "pt-pt": lngObj =  {'code' : '22', 'fbtxt' : 'Comentário', 'al' : 'Fechar a caixa de diálogo da pesquisa'}; break;
+		case "nb-no": lngObj =  {'code' : '20', 'fbtxt' : 'Tilbakemelding', 'al' : 'Lukk undersøkelsesdialogen'}; break;
+		case "he-il": lngObj =  {'code' : '13', 'fbtxt' : 'מָשׁוֹב', 'al' : 'סגור את תיבת הדו-שיח של הסקר'}; break;
+		case "ar-ae": lngObj =  {'code' : '1', 'fbtxt' : 'تاثرات', 'al' : 'أغلق مربع حوار الاستطلاع'}; break;
+		case "cs-cz": lngObj =  {'code' : '5', 'fbtxt' : 'Zpětná vazba', 'al' : 'Zavřete dialogové okno průzkumu'}; break;
+		case "el-gr": lngObj =  {'code' : '8', 'fbtxt' : 'Σχόλια', 'al' : 'Κλείστε το παράθυρο διαλόγου έρευνας'}; break;
+		case "hu-hu": lngObj =  {'code' : '14', 'fbtxt' : 'Visszacsatolás', 'al' : 'Zárja be a felmérés párbeszédpanelt'}; break;
+		case "en-us": lngObj =  {'code' : '9', 'fbtxt' : 'Feedback', 'al' : 'Close the survey dialog'}; break;            
+			}
+
+	if( cclc.substr(0,3) == "en-" )
+	{
+		return {'code' : '9', 'fbtxt' : 'Feedback', 'al' : 'Close the survey dialog'}
+	}
+		}
+		catch(e)
+		{
+			lngObj = {'code' : '9', 'fbtxt' : 'Feedback', 'al' : false};
+		}
+	}
+	
+	if( !lngObj )
+	{
+		lngObj = {'code' : '9', 'fbtxt' : 'Feedback', 'al' : false};
+	}
+	
+	return lngObj;
+}
+};
