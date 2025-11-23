@@ -1,0 +1,3081 @@
+(function(FS) {
+  var session = FS.getCurrentSession(), sessionUrl = FS.getCurrentSessionURL();
+  function retryWithBackoff(condition, callback, maxWait, failureMsg, timeoutCallback) {
+    var totalTimeExpired = 0;
+    var wait = 64;
+    var resultFn = function() {
+      if (condition()) {
+        callback();
+        return;
+      }
+      wait = Math.min(wait * 2, 1024);
+      if (totalTimeExpired > maxWait) {
+        FS.log('warn', failureMsg);
+        !!timeoutCallback && timeoutCallback(failureMsg);
+        return;
+      }
+      totalTimeExpired += wait
+      setTimeout(resultFn, wait);
+    };
+    return resultFn;
+  }
+  function loadSession(key) {
+	var lastSession = window['localStorage'].getItem(key);
+    if (!lastSession) {
+      lastSession = FS._cookies()[key];
+    }
+    return lastSession
+  }
+  function saveSession(key, session) {
+    window['localStorage'].setItem(key, session);
+  }
+
+	window['_dlo_appender'] = 'fullstory';
+	window['_dlo_telemetryExporter'] = (function(FS) {
+		const eventNameMap = {
+			dlo_init_span: 'INIT_DURATION',
+			dlo_rule_registration_span: 'RULE_REGISTRATION_DURATION',
+			dlo_handle_event_span: 'HANDLE_EVENT_DURATION',
+			dlo_client_error: 'CLIENT_ERROR_COUNT',
+		};
+
+		function sendEvent(evt, value) {
+			const metricName = eventNameMap[evt.name];
+			if (!metricName) {
+				return;
+			}
+			const eventStatus = evt.name === 'dlo_client_error' ? 'FAILURE' : 'SUCCESS';
+			const metadata = evt.attributes || {};
+			metadata.name = metricName;
+			metadata.value = value;
+			FS('stat', {
+				eventType: 'INTEGRATION_METRIC',
+				payload: {
+					provider_id: 'dlo',
+					org_id: window['_fs_org'],
+					event_status: eventStatus,
+					metadata: metadata,
+				},
+			});
+		}
+
+		return {
+			sendSpan: function(spanEvent) {
+				sendEvent(spanEvent, spanEvent.duration.toString());
+			},
+			sendCount: function(countEvent) {
+				sendEvent(countEvent, countEvent.value.toString());
+			},
+		};
+	}(FS));
+	window['_dlo_logLevel'] = -1;
+	window['_dlo_beforeDestination'] = Array.isArray(window['_dlo_beforeDestination']) ? window['_dlo_beforeDestination'] : [{ name: 'convert', enumerate: true, preserveArray: true, index: -1 },{ name: 'suffix' },{ name: 'insert', value: 'dlo', position: -1 }];
+	window['_dlo_previewMode'] = false;
+	window['_dlo_readOnLoad'] = true;
+	window['_dlo_validateRules'] = false;
+
+	window['_dlo_rules_adobe_am'] = [];
+	window['_dlo_rules_ceddl'] = [];
+	window['_dlo_rules_google_ec'] = [];
+	window['_dlo_rules_google_ec_ga4'] = [];
+	window['_dlo_rules_google_em'] = [];
+	window['_dlo_rules_google_em_ga4'] = [];
+	window['_dlo_rules_tealium_retail'] = [];
+	try {
+		window['_dlo_rules_custom'] = [{
+    "source": "s[(eVar1)]",
+    "operators": [
+      {
+        "name": "query",
+        "select": "$[?(eVar1!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar1": "evar1_PageName"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar2)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar2!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar2": "evar2_NavigationElement"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar3)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar3!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar3": "evar3_NavigationElementLocation"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar4)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar4!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar4": "evar4_ExternalSearchKeywords"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar5)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar5!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar5": "evar5_SiteSection"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar6)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar6!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar6": "evar6_SiteSectionLevel2"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar7)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar7!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar7": "evar7_AkamaiContinent"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  
+  {
+    "source": "s[(eVar8)]",
+    "operators": [
+      {
+        "name": "query",
+        "select": "$[?(eVar8!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar8": "evar8_UserStatus"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar9)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar9!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar9": "evar9_Culture"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar10)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar10!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar10": "evar10_ClientVersion"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar11)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar11!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar11": "evar11_ApplicationElement"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar12)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar12!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar12": "evar12_AirPR_RE"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar13)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar13!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar13": "evar13_AffiliateID_Name"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar14)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar14!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar14": "evar14_ChannelName"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar15)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar15!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar15": "evar15_BU_Name"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar16)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar16!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar16": "evar16_SuspiciousSiteCount"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar17)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar17!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar17": "evar17_TermDays"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar18)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar18!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar18": "evar18_LoginStatus"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar19)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar19!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar19": "evar19_AkamaiCountryCode"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar20)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar20!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar20": "evar20_GEO"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar21)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar21!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar21": "evar21_Country"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar23)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar23!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar23": "evar23_HourOfTheDay"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar24)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar24!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar24": "evar24_DayOfTheWeek"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar25)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar25!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar25": "evar25_CartExperience_CMS"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar26)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar26!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar26": "evar26_URL"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar27)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar27!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar27": "evar27_PageVersion"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar28)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar28!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar28": "evar28_TemporarySegmentingTest"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar29)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar29!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar29": "evar29_AlertID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar30)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar30!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar30": "evar30_EcardSubscriptionType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar31)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar31!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar31": "evar31_ShoppingCartType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar32)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar32!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar32": "evar32_OfferID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar33)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar33!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar33": "evar33_WebsiteDesignType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar34)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar34!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar34": "evar34_SourceType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar35)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar35!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar35": "evar35_CurrencyCode"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar36)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar36!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar36": "evar36_PaymentType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar37)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar37!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar37": "evar37_CustomerProfileType1_2"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar38)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar38!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar38": "evar38_OrderID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar39)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar39!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar39": "evar39_SearchUTMSource"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar40)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar40!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar40": "evar40_ABTestVariant"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar41)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar41!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar41": "evar41_ErrorType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar42)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar42!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar42": "evar42_ErrorDescription"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar43)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar43!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar43": "evar43_SearchUTM_Medium"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar44)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar44!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar44": "evar44_CustomerProfileType2"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar45)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar45!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar45": "evar45_TrafficSourceName"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar46)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar46!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar46": "evar46_OfferType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar47)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar47!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar47": "evar47_SearchUTM_Campaign"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar48)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar48!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar48": "evar48_CohortID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar49)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar49!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar49": "evar49_MessageID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar50)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar50!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar50": "evar50_AirPR_VI"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar51)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar51!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar51": "evar51_CampaignCategory"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar52)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar52!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar52": "evar52_ClientID_CSPID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar53)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar53!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar53": "evar53_CIDTrackingCode"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar55)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar55!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar55": "evar55_NGMTrafficSource"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar56)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar56!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar56": "evar56_ExistingSubscriptionProductType"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar57)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar57!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar57": "evar57_ExistingProductSubscriptionLength"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar58)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar58!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar58": "evar58_ExistingProductSubscriptionStatus"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar59)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar59!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar59": "evar59_ClickSource"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar60)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar60!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar60": "evar60_DaysToProductExpiry"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar61)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar61!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar61": "evar61_ProductClassificationType"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar62)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar62!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar62": "evar62_ReferrerPageURL"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar64)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar64!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar64": "evar64_UserStatus"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar65)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar65!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar65": "evar65_ARFlag"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar66)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar66!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar66": "evar66_ProductVersionRelease"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar67)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar67!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar67": "evar67_ProductInstallationDate"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar68)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar68!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar68": "evar68_MSSP_ApplicationScanStatus"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar69)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar69!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar69": "evar69_AntivirusStatus"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar70)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar70!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar70": "evar70_PC_OptimizerScanStatus"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar71)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar71!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar71": "evar71_FirewallStatus"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar72)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar72!='')]"
+      }
+      ,
+      {
+        "name": "rename",
+        "properties": {
+          "eVar72": "evar72_OverallScore"
+        }
+      }
+    ],
+    "destination": "FS.setUserVars"
+  },
+  {
+    "source": "s[(eVar73)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar73!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar73": "evar73_SiteAdvisor"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar74)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar74!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar74": "evar74_TotalIssuesCount"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar75)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar75!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar75": "evar75_DangerousSiteCount"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar77)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar77!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar77": "evar77_UpsellLocation"
+        }
+      },    
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar78)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar78!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar78": "evar78_UpsellProductsShown"
+        }
+      },    
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar79)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar79!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar79": "evar79_CrossSellLocation"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar80)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar80!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar80": "evar80_CrossSellProductsShown"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar81)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar81!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar81": "evar81_PromoCodeOffered"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar82)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar82!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar82": "evar82_PromoCode"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar83)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar83!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar83": "evar83_PromoCodeStatus"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar84)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar84!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar84": "evar84_CartProductIDRemoved"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar85)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar85!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar85": "evar85_CartBillingCountry"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar86)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar86!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar86": "evar86_CartProductOffer"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar87)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar87!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar87": "evar87_UpsellitTest"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar88)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar88!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar88": "evar88_OptimizelyExperience"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar100)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar100!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar100": "evar100_CodeVersion"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar111)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar111!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar111": "evar111_TNT_MetaCampaign"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar112)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar112!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar112": "evar112_TNT_MetaExperience"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar113)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar113!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar113": "evar113_TNT_MetaOffer"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar114)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar114!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar114": "evar114_SourceDLP"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar115)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar115!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar115": "evar115_SourceDLP"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar116)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar116!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar116": "evar116_SiteSectionLevel3"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar117)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar117!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar117": "evar117_ABLandingPageTest"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar118)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar118!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar118": "evar118_CartABPageTest"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar119)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar119!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar119": "evar119_EmptyCartAddToCartFailures"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar120)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar120!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar120": "evar120_CartFreeContentType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar121)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar121!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar121": "evar121_CartAmbiguousPopupType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar122)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar122!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar122": "evar122_CartAmbiguousPopupProduct"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar124)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar124!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar124": "evar124_BU_CoE"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar125)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar125!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar125": "evar125_AkamaiCulture"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar126)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar126!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar126": "evar126_AffiliateCategory"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar127)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar127!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar127": "evar127_ACDeliveryID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar128)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar128!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar128": "evar128_BU_CoELevel2"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar129)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar129!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar129": "evar129_CMS_CampaignType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar130)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar130!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar130": "evar130_CMS_CampaignSubType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar131)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar131!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar131": "evar131_CosmosResponseDate"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar132)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar132!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar132": "evar132_CosmosSource"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar136)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar136!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar136": "evar136_R2D_DownloadView"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar137)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar137!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar137": "evar137_R2D_ActivationCultureCode"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar138)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar138!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar138": "evar138_CartV3ProductDropdown"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar139)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar139!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar139": "evar139_CartPromoDisplayName"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar140)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar140!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar140": "evar140_CartPopupName"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar141)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar141!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar141": "evar141_CartDropdownName"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar142)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar142!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar142": "evar142_ReceiptPageType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar143)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar143!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar143": "evar143_CartDropdownOfferName"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar144)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar144!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar144": "evar144_CartABJsExperience"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar145)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar145!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar145": "evar145_CartPaymentFlowType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar146)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar146!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar146": "evar146_BlogsAuthor"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar147)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar147!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar147": "evar147_CartUserARStatus"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar148)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar148!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar148": "evar148_CartSellerID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar149)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar149!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar149": "evar149_CartPromoCodeType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar150)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar150!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar150": "evar150_TestAB"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar151)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar151!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar151": "evar151_BillingExperience"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar152)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar152!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar152": "evar152_BillingApplicationName"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar153)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar153!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar153": "evar153_BillingPopupName"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar154)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar154!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar154": "evar154_BillingTabSelectionPayment"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar155)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar155!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar155": "evar155_ReceiptCartType"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar156)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar156!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar156": "evar156_UserContextChannel"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar157)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar157!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar157": "evar157_UserContextSegment"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar158)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar158!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar158": "evar158_UserContextPackage"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar159)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar159!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar159": "evar159_PageLoad"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar160)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar160!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar160": "evar160_FetchLoad"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar161)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar161!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar161": "evar161_FCP"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar162)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar162!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar162": "evar162_LCP"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar163)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar163!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar163": "evar163_ProductKey"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar164)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar164!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar164": "evar164_UA_ClientID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar165)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar165!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar165": "evar165_NGM_SessionID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar166)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar166!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar166": "evar166_BotifyTotalOrder"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar167)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar167!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar167": "evar167_Cexp"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar168)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar168!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar168": "evar168_MSS_VisitSource"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar169)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar169!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar169": "evar169_MSS_VisitSourceLabel"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar170)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar170!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar170": "evar170_MSS_ClickSource"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar171)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar171!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar171": "evar171_MSS_ScanStatus"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar172)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar172!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar172": "evar172_GlobalDeviceID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar173)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar173!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar173": "evar173_ScrollDownSectionViewed"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar174)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar174!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar174": "evar174_CallToActionID"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar175)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar175!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar175": "evar175_CartCandyRackProduct"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  {
+    "source": "s[(eVar176)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar176!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar176": "evar176_DOM_Referrer"
+        }
+      },
+      {
+        "name": "insert",
+        "value": "page"
+      }
+    ],
+    "destination": "FS.setVars"
+  },
+  {
+    "source": "s[(eVar177)]",
+    "operators": [
+      {
+        "name": "query",
+      "select": "$[?(eVar177!='')]"
+      },
+      {
+        "name": "rename",
+        "properties": {
+          "eVar177": "evar177_Chsc"
+        }
+      },
+    {
+      "name": "insert",
+      "value": "evar custom events"
+    }
+  ],
+  "destination": "FS.event"
+  },
+  
+  {
+      "id": "fs-event-adobe-props",
+      "source": "s[^(prop)]",
+      "operators": [
+        {
+          "name": "insert",
+          "value": "props"
+        }
+      ],
+      "destination": "FS.event"
+    },
+  {
+    "source": "utag_data",
+    "operators": [
+      {
+        "name": "query",
+        "select": "$[?(purchaseID!='')]"
+      },
+      {
+        "name": "query",
+        "select": "$[(purchaseID,_ctotal,_csubtotal,_ctax)]"
+      },
+      {
+        "name": "insert",
+        "value": "purchase"
+      }
+    ],
+    "destination": "FS.event"
+  },
+  {
+      "id": "eVar28",
+      "source": "s[^(eVar28)]",
+      "operators": [
+        {
+          "name": "insert",
+          "value": "Cart Visits"
+        }
+      ],
+      "destination": "FS.event"
+    },
+  {
+      "id": "eVar186",
+      "source": "s[^(eVar186)]",
+      "operators": [
+        {
+          "name": "insert",
+          "value": "Payment Enter"
+        }
+      ],
+      "destination": "FS.event"
+    },
+  {
+      "id": "eVar113",
+      "source": "s[^(eVar113)]",
+      "operators": [
+        {
+          "name": "insert",
+          "value": "Payment Complete"
+        }
+      ],
+      "destination": "FS.event"
+    },
+  {
+      "id": "eVar73",
+      "source": "s[^(eVar73)]",
+      "operators": [
+        {
+          "name": "insert",
+          "value": "Paid Order"
+        }
+      ],
+      "destination": "FS.event"
+    }
+  ];
+	} catch (err) {
+		console.error('FullStory custom rules error; review DLO integration\'s custom rules.');
+	}
+	
+	var dloScriptTag = document.createElement('script');
+	dloScriptTag.type = 'text/javascript';
+	dloScriptTag.async = true;
+	var recSettingsHost = window['_fs_rec_settings_host'];
+	var host = typeof recSettingsHost === 'string' ? recSettingsHost : 'edge.fullstory.com';
+	dloScriptTag.src = 'https://' + host + '/datalayer/v4/latest.js';
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(dloScriptTag,firstScriptTag);
+	
+})(window['_fs_namespace'] ? window[window['_fs_namespace']] : window['FS'])

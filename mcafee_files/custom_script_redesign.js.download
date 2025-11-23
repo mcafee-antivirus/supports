@@ -1,0 +1,243 @@
+
+// For Below the Fold tooltip
+document.addEventListener("vueMountCompleted", function (vueEve) {
+    if (vueEve.detail.view == "atf") {
+
+        initMultipleAccordionCollapse();
+        initTooltip();
+
+        // above the fold 
+    } else if (vueEve.detail.view == "btf") {
+        // any custom script functions that need to run below the fold
+        setTimeout(() => {
+            initTooltip(); // For tooltip in below the fold
+            initMultipleAccordionCollapse(); // For accordion in below the fold
+            // Display previews only if window size >= 576
+            if (window.innerWidth >= 576) {
+                initializePreviewCarousel(); // present in custom_script_redesign.js
+            }
+            attachEventsOnPlanComparator();
+        }, 800);
+    }
+});
+
+function attachEventsOnPlanComparator() {
+    document.querySelectorAll('.seeAllIncludedFeat').forEach((element) => {
+        element.addEventListener('click', toggleadditionalFeatVisibility)
+    });
+    const seeAdditionalPlanlink = document.getElementById("seeAdditionalPlan")
+    if (seeAdditionalPlanlink) {
+        seeAdditionalPlanlink.addEventListener("click", toggleAdditionalPlanVisibility)
+    }
+}
+
+function initTooltip() {
+    document.querySelectorAll('.html__tooltip img').forEach((element) => {
+        element.addEventListener('mouseover', function (event) {
+            positionTooltip(event);
+        });
+        element.addEventListener('mouseout', function (event) {
+            hideToolTip(event, this);
+        });
+    });
+    document.querySelectorAll('.tooltip-close-icon').forEach((element) => {
+        element.addEventListener('click', function (event) {
+            hideToolTip(event, this);
+        })
+    });
+}
+
+function initMultipleAccordionCollapse() {
+    document.querySelectorAll("div[id^='cmp-accordionsection__item']").forEach((element) => {
+        element.addEventListener('show.bs.collapse', function (event) {
+            const item = event.target;
+            document.querySelectorAll('.cmp-accordion__content.show').forEach((accordionItem) => {
+                if (accordionItem.children.length === 1 && item.id !== accordionItem.id) {
+                    accordionItem.classList.remove('show');
+                    accordionItem.previousElementSibling.querySelector('a').setAttribute('aria-expanded', false);
+                }
+            });
+        });
+    });
+}
+
+function positionTooltip(event) {
+    const element = event.target;
+    var tooltip = element.closest('.html__tooltip').querySelector('.tooltiptext');
+    tooltip.classList.add('tooltiptext-hover');
+    var offsetDiff = element.getBoundingClientRect().right + tooltip.offsetWidth;
+    if (offsetDiff > window.screen.width) {
+        if (offsetDiff - 50 < window.screen.width) {
+            tooltip.classList.add('tooltip-resize');
+        }
+        else {
+            tooltip.classList.add('tooltip-position-left');
+        }
+    } else {
+        tooltip.classList.remove('tooltip-position-left');
+        tooltip.classList.remove('tooltip-resize');
+    }
+}
+
+
+function hideToolTip(event, element) {
+    event.stopPropagation()
+    var tooltipEl = element.closest('.html__tooltip');
+    var tooltipText = tooltipEl.querySelector('.tooltiptext');
+    tooltipText.classList.remove('tooltiptext-hover');
+    tooltipText.classList.remove('tooltip-resize');
+    tooltipText.classList.remove('tooltip-position-left');
+}
+
+// Set scroll position to top on page load/refresh
+if (history.scrollRestoration) {
+    history.scrollRestoration = 'manual';
+} else {
+    window.onbeforeunload = function () {
+        window.scrollTo(0, 0);
+    }
+}
+
+
+/* ----- Start Static Plan Comparator --------*/
+
+
+
+let additionalPlanVisible = false;
+function toggleAdditionalPlanVisibility() {
+
+
+    additionalPlanVisible = !additionalPlanVisible;
+    const additionalPlanBtnIcon = document.getElementById("additionalPlanBtnIcon");
+    additionalPlanBtnIcon.className = additionalPlanVisible ? 'ml-1 showMore' : 'ml-1 showLess'
+    const additionalPlanSection = document.getElementById("additionalPlan");
+    additionalPlanSection.className = additionalPlanVisible ? "showPlan" : "hidePlan";
+
+    const additionalPlanBtnText = document.getElementById("additionalPlanBtnText");
+    additionalPlanBtnText.innerText = additionalPlanVisible ? "Hide" : "See";
+
+}
+
+let additionalFeatVisible = false;
+function toggleadditionalFeatVisibility() {
+
+    additionalFeatVisible = !additionalFeatVisible;
+
+    const additionalFeatBtnIcon = document.getElementsByClassName("additionalFeatBtnIcon");
+    for (let i = 0; i < additionalFeatBtnIcon.length; i++) {
+        additionalFeatBtnIcon[i].className = additionalFeatVisible ? 'additionalFeatBtnIcon ml-1 showMore' : 'additionalFeatBtnIcon ml-1 showLess'
+    }
+
+
+    const featToHideNShow = document.getElementsByClassName("plan-feat");
+    for (let i = 0; i < featToHideNShow.length; i++) {
+        featToHideNShow[i].className = additionalFeatVisible ? "plan-feat plan-feat--show" : "plan-feat plan-feat--hide";
+    }
+
+    const additionalFeatBtnText = document.getElementsByClassName("additionalFeatBtnText");
+    for (let i = 0; i < additionalFeatBtnText.length; i++) {
+        additionalFeatBtnText[i].innerText = additionalFeatVisible ? "Show less" : "See all included features";
+    }
+
+    const featTitle = document.getElementsByClassName("card-feature-title");
+    for (let i = 0; i < featTitle.length; i++) {
+        featTitle[i].innerText = additionalFeatVisible ? "All Features" : "Key included features";
+    }
+
+}
+
+
+let additionalFeatVisiblefamily = false;
+function toggleadditionalFeatVisibilityFamily() {
+
+    additionalFeatVisible = !additionalFeatVisible;
+
+    const additionalFeatBtnIcon = document.getElementsByClassName("additionalFeatBtnIcon");
+    for (let i = 0; i < additionalFeatBtnIcon.length; i++) {
+        additionalFeatBtnIcon[i].className = additionalFeatVisible ? 'additionalFeatBtnIcon ml-1 showMore' : 'additionalFeatBtnIcon ml-1 showLess'
+    }
+
+
+    const featToHideNShow = document.getElementsByClassName("plan-feat");
+    for (let i = 0; i < featToHideNShow.length; i++) {
+        featToHideNShow[i].className = additionalFeatVisible ? "plan-feat plan-feat--show" : "plan-feat plan-feat--hide";
+    }
+
+    const additionalFeatBtnText = document.getElementsByClassName("additionalFeatBtnText");
+    for (let i = 0; i < additionalFeatBtnText.length; i++) {
+        additionalFeatBtnText[i].innerText = additionalFeatVisible ? "Show less" : "See all included features";
+    }
+
+    const featTitle = document.getElementsByClassName("card-feature-title");
+    for (let i = 0; i < featTitle.length; i++) {
+        featTitle[i].innerText = additionalFeatVisible ? "All Features" : "Key included features";
+    }
+
+}
+
+/* ----- End Static Plan Comparator --------*/
+
+/* Preview Style Carousel JS */
+function initializePreviewCarousel() {
+    var carousel = document.querySelector('.cmp-carousel__body__prev-next-preview:not(.aem-GridColumn--default--hide) .carousel');
+    if (carousel) {
+        var slides = carousel.querySelectorAll('.carousel .carousel-item');
+
+        slides.forEach((el) => {
+            // number of slides per carousel-item
+            const minPerSlide = slides.length
+            let next = el.nextElementSibling
+            let prev = el.previousElementSibling
+
+            // Append last slide only before first slide
+            if (!prev) {
+                let last = slides[minPerSlide - 1]
+                let lastChildClone = last.cloneNode(true);
+                el.prepend(lastChildClone.children[0])
+            }
+            else {
+                let cloneChild = prev.cloneNode(true)
+                let child = cloneChild.children.lenth > 1 ? cloneChild.children[2] : cloneChild.children[1]
+                el.prepend(child)
+            }
+            if (!next) {
+                next = slides[0]
+            }
+            let cloneChild = next.cloneNode(true)
+            let child = cloneChild.children.length > 2 ? cloneChild.children[1] : cloneChild.children[0]
+            el.appendChild(child)
+        })
+    }
+}
+
+// For restoring focus on modal closure , back on element pre modal opening .
+let lastFocus;
+document.addEventListener('show.bs.modal', function (event) {
+    if (event.target.classList.contains('modal')) {
+        lastFocus = $(':focus');
+    };
+});
+document.addEventListener('hidden.bs.modal', function (event) {
+    if (event.target.classList.contains('modal')) {
+        if (lastFocus && lastFocus.length > 0) {
+            lastFocus.focus();
+            resetLastFocus();
+        }
+    };
+});
+
+// Closure of modal on ESC key
+document.addEventListener('keyup', function (event) {
+    if (event.key === "Escape") {
+        let openModal = document.getElementsByClassName('cmp-modal__modal modal fade show')
+        if (openModal && openModal.length > 0) {
+            let modal = bootstrap.Modal.getInstance(openModal[0]);
+            modal.hide();
+        }
+    }
+})
+
+// To reset the value of variable lastFocus
+function resetLastFocus() {
+    lastFocus = null;
+}
